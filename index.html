@@ -14,6 +14,11 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
         h1 {
             font-size: 2rem;
@@ -24,9 +29,10 @@
             border: 5px solid white;
             border-radius: 10px;
             display: block;
-            margin: auto;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
             background: white;
+            width: 90vw;
+            height: 70vh;
         }
         .controls {
             margin-top: 10px;
@@ -68,14 +74,17 @@
         function adjustCanvasSize() {
             let deviceWidth = window.innerWidth;
             let deviceHeight = window.innerHeight;
-            let scale = deviceWidth < 768 ? 1.2 : 1.5; // Adjust scaling for mobile & desktop
+            let scale = deviceWidth < 768 ? 2 : 1.5; // Adjust scaling for mobile & desktop
 
             if (deviceWidth < 768) {
                 screen.orientation.lock("portrait").catch(() => {});
+                canvas.width = deviceWidth * 0.9;
+                canvas.height = deviceHeight * 0.7;
             } else {
                 screen.orientation.lock("landscape").catch(() => {});
+                canvas.width = deviceWidth * 0.9;
+                canvas.height = deviceHeight * 0.7;
             }
-
             return scale;
         }
 
@@ -90,9 +99,6 @@
         function renderPage(num) {
             pdfDoc.getPage(num).then(page => {
                 let viewport = page.getViewport({ scale: scale });
-                canvas.width = window.innerWidth * 0.9;
-                canvas.height = (canvas.width / viewport.width) * viewport.height;
-
                 let renderContext = {
                     canvasContext: ctx,
                     viewport: page.getViewport({ scale: canvas.width / viewport.width })
