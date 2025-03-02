@@ -11,6 +11,8 @@
             font-family: 'Georgia', serif;
             background: linear-gradient(to right, #ff758c, #ff7eb3);
             color: white;
+            margin: 0;
+            padding: 0;
         }
         h1 {
             font-size: 2rem;
@@ -24,6 +26,8 @@
             margin: auto;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
             background: white;
+            max-width: 100%;
+            height: auto;
         }
         .controls {
             margin-top: 10px;
@@ -70,7 +74,9 @@
 
         function renderPage(num) {
             pdfDoc.getPage(num).then(page => {
-                let viewport = page.getViewport({ scale: 1.5 });
+                let scale = window.innerWidth < 768 ? 1 : 1.5; // Adjust scale for mobile
+                let viewport = page.getViewport({ scale: scale });
+
                 canvas.width = viewport.width;
                 canvas.height = viewport.height;
 
@@ -97,6 +103,9 @@
             pageNum++;
             renderPage(pageNum);
         }
+
+        // Ensure canvas resizes properly on window resize
+        window.addEventListener('resize', () => renderPage(pageNum));
     </script>
 </body>
 </html>
