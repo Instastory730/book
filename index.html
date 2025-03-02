@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Romantic PDF Flipbook</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <style>
@@ -11,28 +11,19 @@
             font-family: 'Georgia', serif;
             background: linear-gradient(to right, #ff758c, #ff7eb3);
             color: white;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
         }
         h1 {
             font-size: 2rem;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         canvas {
             border: 5px solid white;
             border-radius: 10px;
             display: block;
+            margin: auto;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
             background: white;
-            width: 90vw;
-            height: 70vh;
         }
         .controls {
             margin-top: 10px;
@@ -56,7 +47,7 @@
     </style>
 </head>
 <body>
-    <h1>PDF Flipbook</h1>
+    <h1> PDF Flipbook</h1>
     <canvas id="pdf-canvas"></canvas>
     <div class="controls">
         <button onclick="prevPage()">❮ Previous</button>
@@ -71,25 +62,6 @@
             canvas = document.getElementById('pdf-canvas'),
             ctx = canvas.getContext('2d');
 
-        function adjustCanvasSize() {
-            let deviceWidth = window.innerWidth;
-            let deviceHeight = window.innerHeight;
-            let scale = deviceWidth < 768 ? 2 : 1.5; // Adjust scaling for mobile & desktop
-
-            if (deviceWidth < 768) {
-                screen.orientation.lock("portrait").catch(() => {});
-                canvas.width = deviceWidth * 0.9;
-                canvas.height = deviceHeight * 0.7;
-            } else {
-                screen.orientation.lock("landscape").catch(() => {});
-                canvas.width = deviceWidth * 0.9;
-                canvas.height = deviceHeight * 0.7;
-            }
-            return scale;
-        }
-
-        let scale = adjustCanvasSize();
-
         pdfjsLib.getDocument(url).promise.then(doc => {
             pdfDoc = doc;
             document.getElementById('page-info').textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
@@ -98,10 +70,13 @@
 
         function renderPage(num) {
             pdfDoc.getPage(num).then(page => {
-                let viewport = page.getViewport({ scale: scale });
+                let viewport = page.getViewport({ scale: 1.5 });
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
                 let renderContext = {
                     canvasContext: ctx,
-                    viewport: page.getViewport({ scale: canvas.width / viewport.width })
+                    viewport: viewport
                 };
                 page.render(renderContext);
                 document.getElementById('page-info').textContent = `Page ${num} of ${pdfDoc.numPages}`;
@@ -122,11 +97,6 @@
             pageNum++;
             renderPage(pageNum);
         }
-
-        window.addEventListener("resize", () => {
-            scale = adjustCanvasSize();
-            renderPage(pageNum);
-        });
     </script>
 </body>
 </html>
