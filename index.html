@@ -24,8 +24,6 @@
             margin: auto;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
             background: white;
-            max-width: 90vw;
-            height: auto;
         }
         .controls {
             margin-top: 10px;
@@ -64,13 +62,6 @@
             canvas = document.getElementById('pdf-canvas'),
             ctx = canvas.getContext('2d');
 
-        function getOptimalScale() {
-            let screenWidth = window.innerWidth;
-            if (screenWidth <= 480) return 1.2; // Slightly increased scale for mobile clarity
-            if (screenWidth <= 768) return 1.5; // Adjusted for tablets
-            return 1.5; // Default scale for desktops
-        }
-
         pdfjsLib.getDocument(url).promise.then(doc => {
             pdfDoc = doc;
             document.getElementById('page-info').textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
@@ -79,25 +70,14 @@
 
         function renderPage(num) {
             pdfDoc.getPage(num).then(page => {
-                let scale = getOptimalScale();
-                let viewport = page.getViewport({ scale });
-
-                // Set the correct canvas size
-                let deviceScale = window.devicePixelRatio || 1;
-                let scaledWidth = viewport.width * deviceScale;
-                let scaledHeight = viewport.height * deviceScale;
-
-                canvas.width = scaledWidth;
-                canvas.height = scaledHeight;
-                canvas.style.width = `${viewport.width}px`; // Ensuring it doesn't look zoomed
-                canvas.style.height = `${viewport.height}px`;
+                let viewport = page.getViewport({ scale: 1.5 });
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
 
                 let renderContext = {
                     canvasContext: ctx,
-                    viewport: viewport,
-                    transform: [deviceScale, 0, 0, deviceScale, 0, 0]
+                    viewport: viewport
                 };
-
                 page.render(renderContext);
                 document.getElementById('page-info').textContent = `Page ${num} of ${pdfDoc.numPages}`;
 
